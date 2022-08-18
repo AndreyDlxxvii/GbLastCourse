@@ -8,7 +8,7 @@ public abstract class Character : NetworkBehaviour
     protected abstract FireAction fireAction { get; set; }
     [SyncVar] protected Vector3 serverPosition;
     [SyncVar] protected Quaternion serverRotation;
-    [SyncVar] protected int serverHp;
+    [SyncVar] protected int serverHealth;
     protected virtual void Initiate()
     {
         OnUpdateAction += Movement;
@@ -22,17 +22,17 @@ public abstract class Character : NetworkBehaviour
         OnUpdateAction?.Invoke();
     }
     [Command]
-    protected void CmdUpdatePosition(Vector3 position, Quaternion rotation, int hp)
+    protected void CmdUpdatePosition(Vector3 position, Quaternion rotation, int health)
     {
         serverPosition = position;
         serverRotation = rotation;
-        serverHp = hp;
+        serverHealth = health;
     }
 
     [Command]
-    protected void CmdShootByClient()
+    protected void CmdShootByClient(RaycastHit hit)
     {
-        Debug.Log(123);
+        Debug.Log(hit.collider.tag);
     }
     
     public abstract void Movement();

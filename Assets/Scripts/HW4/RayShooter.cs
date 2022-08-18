@@ -11,7 +11,7 @@ public class RayShooter : FireAction
     }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && hasAuthority)
         {
             Shooting();
         }

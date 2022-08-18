@@ -21,7 +21,24 @@ public class PlayerCharacter : Character
         characterController ??= gameObject.AddComponent<CharacterController>();
         mouseLook = GetComponentInChildren<MouseLook>();
         mouseLook ??= gameObject.AddComponent<MouseLook>();
+        fireAction.ShootByPlayer += FireActionOnShootByPlayer;
     }
+
+    private void FireActionOnShootByPlayer()
+    {
+        var ray = GetRay(transform);
+        CmdShootByClient(ray);
+    }
+
+    private RaycastHit GetRay(Transform transform)
+    {
+        var ray = transform.GetComponentInChildren<Camera>().ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2,
+            Camera.main.pixelHeight / 2, 0));
+        Physics.Raycast(ray, out var hit);
+   
+        return hit;
+    }
+    
     public override void Movement()
     {
         if (mouseLook != null && mouseLook.PlayerCamera != null)
@@ -38,19 +55,16 @@ public class PlayerCharacter : Character
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 movement *= acceleration;
-                //NetworkManager.singleton.StopClient();
             }
             movement.y = gravity;
             movement = transform.TransformDirection(movement);
             characterController.Move(movement);
             mouseLook.Rotation();
-            fireAction.ShootPlayer += () =>
-            {
-                CmdShootByClient();
-            };
-            
             CmdUpdatePosition(transform.position, transform.rotation, health);
-            
+            if (health <= 0)
+            {
+                NetworkManager.singleton.StopClient();
+            }
         }
         else
         {
@@ -81,5 +95,4 @@ public class PlayerCharacter : Character
         GUI.Label(new Rect(posXBul, posYBul, bulletCountSize * 2,
             bulletCountSize * 2), info);
     }
-
 }

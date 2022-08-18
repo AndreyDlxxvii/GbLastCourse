@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-public abstract class FireAction : MonoBehaviour
+using UnityEngine.Networking;
+
+public abstract class FireAction : NetworkBehaviour
 {
-    public event Action ShootPlayer;
-    
+    public event Action ShootByPlayer; 
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int startAmmunition = 20;
     protected string bulletCount = string.Empty;
@@ -42,11 +43,11 @@ public abstract class FireAction : MonoBehaviour
     }
     protected virtual void Shooting()
     {
-        ShootPlayer?.Invoke();
         if (bullets.Count == 0)
         {
             Reloading();
         }
+        ShootByPlayer?.Invoke();
         countBullet = bullets.Count;
     }
     private async Task<Queue<GameObject>> Reload()
